@@ -18,7 +18,6 @@ public class AdjacencyMatrix : MonoBehaviour {
 
     public List<vertex> aMatrix;
     public GameObject[] allNodes;
-    public List<GameObject> test;
     public int index; 
 
     public void GenerateMatrix()
@@ -40,12 +39,6 @@ public class AdjacencyMatrix : MonoBehaviour {
                     }
                 }
             }
-        }
-
-        test = new List<GameObject>();
-        foreach (vertex v in aMatrix)
-        {
-            test.Add(v.node);
         }
     }
 
