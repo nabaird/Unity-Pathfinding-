@@ -18,12 +18,6 @@ public class FindPathTest : MonoBehaviour {
     {
         path = new Stack<GameObject>();
         GameObject[] nodes = GameObject.Find("Nodes").GetComponent<AllNodes>().NodeList;
-        //GameObject s = nodes[star];
-        //GameObject d = nodes[dest];
-        //path = GetComponent<FindPath>().BreadthFirst(s,d);
-        //activeNode = s;
-
-        //isMoving = true;
     }
 
     public void BeginMovement(Stack<GameObject> stack, GameObject start)
