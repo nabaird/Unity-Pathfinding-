@@ -1,0 +1,22 @@
+# Unity-Pathfinding-
+My implementation of a pathfinding system which allows characters to efficiently navigate through a game space 
+
+Unity contains the functionality to bake navigation meshes. While the nav-mesh feature is convenient, I have found it frusterating on numerous occasions. Characters often slide unpredictably and the ways in which they are capable of interacting with it are quite limited (doors, for example, prove to be a challege). So the project of creating a reusable pathfinding system from scratch was of great interest to me. 
+
+Attached are two folders: "Horiztontal Movement" contains three C# scripts which are meant to be attached to the relevant character/AI. "Pathing Nodes" contains two C# scripts. One of which is attached to pathfinding nodes, another is attached to an 'empty' GameObject which stores information about all the pathfinding nodes. 
+
+  Pathing Nodes:
+The script "AdjacencyMatrix" is attached to pathfinding nodes. Pathfinding nodes are GameObjects which are hand placed (though they may be procedurally instantiated). When GenerateMatrix() is called we run a scan through all the other pathfinding nodes. For each node we check to see if a straight line can be traced between the two nodes (I use a Physics.Raycast). If the line does not collide with any other objects (such as walls) then the two nodes are considered to be adjacent to one another. The weight of the adjacent pair is simply the distance (Vector3.Distance(node a, node b)) between the two. index is an int variable which is used by the "AllNodes" script.
+
+The script "AllNodes" is attached to a single empty GameObject. The script simply , on Awake(), creates an array which stores all the pathfinding nodes. This is useful for the pathfinding algorithm. The script also calls GenerateMatrix(), as well as establishes the index value (previously mentioned) as the location of the node in the array. 
+
+  Horiztontal Pathing:
+The script "FindPath" runs an breadth-first search algorithm for finding the quickest path. See my repository on Breadth-First Search for a detailed explanation of its operations. The tricky feature of this script is how it uses each node's adjacency matrix. An important feature of the path-finding problem is the following: There is data which is temporary (we don't need to return to it after the algorithm is finished) and data which we want to keep for the next time the algorithm is applied. We need to keep all the information found in each node's adjacency matrix, for example. We do not need to keep data relating to the distance each node is from the start (or the end) of the path. So when BreadthFirst() is called we create an array which stores temporary data. Each index in the array corrisponds to a pathfinding node. The index of the node in the array is the same as the index of the node in the "AllNodes" array mentioned previously. The int 'name' references this index. It is the same value as the int 'index' from "AdjacencyMatrix". These values allow the algorithm to bounce back and forth between permanent data (found in each adjacency matrix) and temporary data (found in the data array). So a line that reads:
+                          q.Enqueue(data[j.node.GetComponent<AdjacencyMatrix>().index])
+Says to add a peice of temporary data to queue q. The temporary data concerns the pathfinding node located at the node's index value in the data array. 
+The algorithm returns a stack which contains each successive node the character must travel to to reach its destination. 
+
+The script "FindPathTest" provides an example of how a character might utilize the stack returned by "FindPath". When the character is close enough to a node the top of the stack is popped and the character moves towards the next node. This script ensures that a 3D character will travel to the correct location regardless of where each node is placed on the y-axis. For example, a level designer may with to place all nodes such that they hover above the scene. The character will ignore the y-value of each pathfinding node's transform. 
+
+The script "PathGoalTest" provides an example of a situation in which a path may need to be generated for a character. Suppose that when the player left-clicks his gun fires. This may alert all the enemies in the level. In "PathGoalTest" when the left mouse button is pressed a path is generated (using "FindPath") which takes the closest node to the player as the desired destination and a node close to the character (and along the desired path to the player) as the start. 
+
